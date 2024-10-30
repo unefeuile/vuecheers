@@ -5,12 +5,14 @@ import User from '@/components/User.vue';
 import Face from '@/components/face.vue';
 import Registration from '@/components/registration.vue';
 import Result from '@/components/result.vue';
+import Helloworld from '@/components/HelloWorld.vue';
+import Call from '@/components/call.vue';
 
 // 手動でのルートを追加
 const manualRoutes = [
   {
-    path: '/',
-    name: 'user',
+    path: '/User',
+    name: 'User',
     component: User,
   },
   {
@@ -32,9 +34,21 @@ const manualRoutes = [
     component: Result,
     props: true,
   },
-
+    {
+      path: '/',
+      name: 'Helloworld',
+      component: Helloworld,
+      props: true,
+    },
+    {
+      path: '/call',
+      name: 'call',
+      component: Call,
+      props: true,
+    },
 
 ];
+
 
 // 自動生成されたルートと手動で追加したルートを結合
 const routes = [...autoRoutes, ...manualRoutes];

@@ -1,22 +1,22 @@
 <template>
-  <v-container class="d-flex align-center justify-center fill-height">
+  <v-container class="d-flex align-center justify-center fill-height container">
     <div class="text-center">
       <h1 class="title">飲み会名を入力</h1>
-      <v-text-field v-model="partyName" label="飲み会名" />
+      <v-text-field v-model="partyName" label="飲み会名" class="text-field" />
       <v-btn @click="startParty" :disabled="!partyName">決定</v-btn>
 
       <v-divider class="my-4" />
 
       <h2 class="title">参加者登録</h2>
-      <v-text-field v-model="participantName" label="名前" />
-      <v-select v-model="selectedGender" :items="genders" label="性別" />
+      <v-text-field v-model="participantName" label="名前" class="text-field" />
+      <v-select v-model="selectedGender" :items="genders" label="性別" class="text-field" />
       <v-btn @click="addParticipant" :disabled="!participantName || !selectedGender">参加者追加</v-btn>
 
-      <v-list>
+      <v-list class="transparent-list">
         <v-list-item-group>
-          <v-list-item v-for="(participant, index) in participants" :key="index">
+          <v-list-item v-for="(participant, index) in participants" :key="index" class="transparent-background">
             <v-list-item-content>
-              <v-list-item-title>{{ participant.name }} ({{ participant.gender }})</v-list-item-title>
+              <v-list-item-title class="participant-name">{{ participant.name }} ({{ participant.gender }})</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
         </v-list-item-group>
@@ -53,7 +53,6 @@ let timer;
 
 const addParticipant = () => {
   if (participantName.value && selectedGender.value) {
-    // 参加者情報をオブジェクトとして追加
     participants.value.push({ name: participantName.value, gender: selectedGender.value, avatar: '' });
     participantName.value = '';
     selectedGender.value = '';
@@ -65,6 +64,8 @@ const startTimer = () => {
     elapsedTime.value++;
   }, 1000);
 };
+
+
 
 const startMeeting = () => {
   console.log('飲み会がスタートしました！');
@@ -91,9 +92,33 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+.container {
+  background: linear-gradient(to bottom, #fdd835, #ffe57f); /* ビールの色をイメージしたグラデーション */
+  height: 100vh; /* 全画面の高さを指定 */
+}
+
 .title {
   font-size: 2rem;
   margin-bottom: 16px;
+  color: #5d3d2c; /* 茶色に変更 */
+}
+
+.text-field {
+  color: #5d3d2c; /* テキストフィールドの文字色を茶色に変更 */
+}
+
+.transparent-list {
+  background-color: transparent; /* リストの背景を透明に設定 */
+}
+
+.transparent-background {
+  background-color: transparent; /* 参加者の背景を透明に設定 */
+}
+
+.participant-name {
+  color: black; /* 参加者名の文字色を黒に設定 */
+  list-style-type: disc; /* 箇条書きのスタイルを指定 */
+  padding-left: 20px; /* 左に少し余白を追加 */
 }
 
 .button-container {
@@ -122,5 +147,6 @@ onUnmounted(() => {
 .elapsed-time {
   font-size: 1.5rem;
   margin-top: 20px;
+  color: #5d3d2c; /* 茶色に変更 */
 }
 </style>

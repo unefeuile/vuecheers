@@ -1,155 +1,145 @@
 <template>
-  <v-container class="d-flex align-center justify-center fill-height">
-    <div class="text-center">
-      <h1 class="title">お酒の登録</h1>
+  <div class="container">
+    <h1 class="title">Cheers</h1>
+    <img src="/beer.png" alt="中央の写真" class="image" />
+    <button @click="startGame" :disabled="isGameStarted" class="start-button">スタート</button>
 
-      <v-btn @click="startCamera" class="camera-button">カメラを起動</v-btn>
-
-      <div v-if="isCameraActive" class="camera-container">
-        <video ref="video" autoplay></video>
-        <v-btn @click="takePhoto" class="capture-button">写真を撮る</v-btn>
-        <canvas ref="canvas" style="display: none;"></canvas>
-      </div>
-
-      <div v-if="photoUrl">
-        <img :src="photoUrl" alt="撮影した写真" />
-      </div>
-
-      <v-divider class="my-4" />
-
-      <v-form @submit.prevent="addDrink">
-        <v-text-field
-          v-model="drinkName"
-          label="お酒の名前"
-          required
-        />
-        <v-text-field
-          v-model="drinkDetails"
-          label="詳細"
-          required
-        />
-        <v-btn type="submit" class="submit-button">登録</v-btn>
-      </v-form>
-
-      <v-divider class="my-4" />
-
-      <h2 class="subtitle">飲んだお酒一覧</h2>
-      <v-list>
-        <v-list-item
-          v-for="(drink, index) in drinks"
-          :key="index"
-        >
-          <v-list-item-content>
-            <v-list-item-title>{{ drink.name }}</v-list-item-title>
-            <v-list-item-subtitle>{{ drink.details }}</v-list-item-subtitle>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
-
-      <v-divider class="my-4" />
-
-      <!-- 戻るボタン -->
-      <v-btn @click="goBack" class="back-button">
-        戻る
-      </v-btn>
+    <div class="bubble-container">
+      <div v-for="bubble in bubbles" :key="bubble.id" class="bubble" :style="bubble.style"></div>
     </div>
-  </v-container>
+  </div>
 </template>
 
-<script setup>
-import { ref, onMounted } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+<script>
+import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { useRouter } from 'vue-router';
 
-const route = useRoute();
-const router = useRouter();
-const userId = route.params.userId;
+export default {
+  setup() {
+    const router = useRouter();
+    const bubbles = ref([]);
+    const isGameStarted = ref(false); // ゲーム開始状態
 
-const drinkName = ref('');
-const drinkDetails = ref('');
-const drinks = ref([]);
-const isCameraActive = ref(false);
-const photoUrl = ref('');
-const video = ref(null);
-const canvas = ref(null);
+    const startGame = () => {
+      if (!isGameStarted.value) {
+        router.push('/user'); // ユーザー画面に遷移
+      }
+    };
 
-// カメラを起動する関数
-const startCamera = async () => {
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-    video.value.srcObject = stream;
-    video.value.play();
-    isCameraActive.value = true;
-  } catch (error) {
-    console.error("カメラの起動に失敗しました: ", error);
-  }
-};
+    const createBubble = () => {
+      const size = Math.random() * 20 + 10; // 10pxから30pxのサイズ
+      const left = Math.random() * 100; // 0%から100%の位置
+      const duration = Math.random() * 5 + 5; // 5秒から10秒の間
 
-// 写真を撮る関数
-const takePhoto = () => {
-  const ctx = canvas.value.getContext('2d');
-  canvas.value.width = video.value.videoWidth;
-  canvas.value.height = video.value.videoHeight;
-  ctx.drawImage(video.value, 0, 0);
-  photoUrl.value = canvas.value.toDataURL('image/png');
-};
+      const bubbleStyle = {
+        width: `${size}px`,
+        height: `${size}px`,
+        left: `${left}%`,
+        animationDuration: `${duration}s`,
+      };
 
-// お酒を登録する関数
-const addDrink = () => {
-  if (drinkName.value && drinkDetails.value) {
-    drinks.value.push({
-      name: drinkName.value,
-      details: drinkDetails.value,
-      photo: photoUrl.value, // 写真も追加
+      bubbles.value.push({
+        id: Date.now(),
+        style: bubbleStyle,
+      });
+
+      if (bubbles.value.length > 30) {
+        bubbles.value.shift(); // 最大30個の泡を保持
+      }
+    };
+
+    onMounted(() => {
+      setInterval(createBubble, 300); // 0.3秒ごとに泡を生成
     });
-    drinkName.value = '';
-    drinkDetails.value = '';
-    photoUrl.value = ''; // クリア
-  }
-};
 
-// 戻るボタンの処理
-const goBack = () => {
-  router.push({ name: 'face' });
-};
+    onBeforeUnmount(() => {
+      bubbles.value = [];
+    });
 
-onMounted(() => {
-  // 初期化処理が必要な場合
-});
+    return { startGame, bubbles, isGameStarted };
+  },
+};
 </script>
 
 <style scoped>
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  text-align: center;
+  background: linear-gradient(to bottom, #fdd835, #ffe57f);
+  overflow: hidden;
+  position: relative;
+}
+
 .title {
-  font-size: 2rem;
-  margin-bottom: 16px;
+  font-size: 5rem;
+  font-weight: bold;
+  color: #3e2723;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  margin-bottom: 20px;
+  z-index: 1;
 }
 
-.subtitle {
-  font-size: 1.5rem;
-  margin-top: 20px;
-}
-
-.submit-button {
-  margin-top: 20px;
-  background-color: #ff5722;
-  color: #fff;
-}
-
-.back-button {
-  margin-top: 20px;
-  background-color: #007bff;
-  color: #fff;
-}
-
-.camera-container {
-  margin-top: 20px;
-}
-
-.video {
-  width: 100%;
+.image {
+  width: 300px;
   height: auto;
+  margin-bottom: 20px;
 }
 
-.capture-button {
-  margin-top: 10px;
+.start-button {
+  padding: 15px 30px;
+  font-size: 1.5rem;
+  color: #ffffff;
+  background-color: #3e2723;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 30px;
+  transition: background-color 0.3s, transform 0.3s;
+  position: relative;
+  z-index: 2;
+}
+
+.start-button:hover {
+  background-color: #5d4037;
+  transform: scale(1.05);
+}
+
+.start-button:disabled {
+  background-color: #9e9e9e;
+  cursor: not-allowed;
+}
+
+.bubble-container {
+  position: absolute;
+  top: 50px; 
+  left: 0;
+  right: 0;
+  height: calc(100vh - 50px);
+  overflow: hidden;
+}
+
+.bubble {
+  position: absolute;
+  bottom: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.6); /* 白っぽい透明感 */
+  opacity: 0.8; /* 半透明に */
+  animation: bubble-float 10s forwards;
+  z-index: 0;
+}
+
+@keyframes bubble-float {
+  0% {
+    transform: translateY(0);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(-150vh); /* 浮かび上がる高さを増やす */
+    opacity: 0; /* 徐々に透明になる */
+  }
 }
 </style>
