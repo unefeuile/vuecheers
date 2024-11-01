@@ -26,7 +26,7 @@
 
       <div class="button-container">
         <v-btn @click="startMeeting" :disabled="participants.length === 0" class="fun-button">
-          START
+          スタート
         </v-btn>
       </div>
       
@@ -102,6 +102,7 @@ onUnmounted(() => {
   margin-bottom: 16px;
   color: #5d3d2c; /* 茶色に変更 */
 }
+
 
 .text-field {
   color: #5d3d2c; /* テキストフィールドの文字色を茶色に変更 */

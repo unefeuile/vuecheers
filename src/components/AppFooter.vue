@@ -37,7 +37,7 @@
   const items = [
     {
       title: 'Vuetify Documentation',
-      icon: $vuetify,
+      icon: `$vuetify`,
       href: 'https://vuetifyjs.com/',
     },
     {
@@ -52,7 +52,7 @@
     },
     {
       title: 'Vuetify GitHub',
-      icon: mdi-github,
+      icon: `mdi-github`,
       href: 'https://github.com/vuetifyjs/vuetify',
     },
     {
@@ -62,7 +62,7 @@
     },
     {
       title: 'Vuetify Reddit',
-      icon: mdi-reddit,
+      icon: `mdi-reddit`,
       href: 'https://reddit.com/r/vuetifyjs',
     },
   ]
@@ -76,4 +76,4 @@
 
     &:hover
       color: rgba(25, 118, 210, 1)
-</style> 　　　　　
+</style>
