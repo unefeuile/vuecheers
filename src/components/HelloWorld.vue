@@ -20,8 +20,23 @@ export default {
     const bubbles = ref([]);
     const isGameStarted = ref(false); // ゲーム開始状態
 
+    // 画面が開いたときに音を再生
+    onMounted(() => {
+      const audio = new Audio('/cheers-47720.mp3'); // 音のファイルパス
+      audio.volume = 0.5; // 音量設定
+      audio.play();
+
+      setInterval(createBubble, 300); // 0.3秒ごとに泡を生成
+    });
+
     const startGame = () => {
       if (!isGameStarted.value) {
+        // スタートボタンが押されたときに音を再生
+        const audio = new Audio('/meka_ge_mouse_s02.mp3'); // 音のファイルパス
+        audio.volume = 0.5; // 音量設定
+        audio.play();
+
+        isGameStarted.value = true; // ゲーム開始状態を更新
         router.push('/user'); // ユーザー画面に遷移
       }
     };
@@ -47,10 +62,6 @@ export default {
         bubbles.value.shift(); // 最大30個の泡を保持
       }
     };
-
-    onMounted(() => {
-      setInterval(createBubble, 300); // 0.3秒ごとに泡を生成
-    });
 
     onBeforeUnmount(() => {
       bubbles.value = [];
