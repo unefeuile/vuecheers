@@ -1,26 +1,31 @@
 <template>
+  <!-- コンテナを中央に配置 -->
   <v-container class="d-flex align-center justify-center fill-height container">
     <div class="text-center">
+      <!-- パーティ名と結果発表のタイトル -->
       <h1 class="title">{{ partyName }} 結果発表</h1>
-      <v-divider class="my-4" />
   
-      <h2 class="subtitle">参加者一覧</h2>
-      <v-list>
-        <v-list-item v-for="(participant, index) in participants" :key="index" class="participant-item">
-          <v-list-item-avatar>
-            <v-img :src="participant.avatar || 'https://via.placeholder.com/50'" alt="アイコン" />
-          </v-list-item-avatar>
-          <v-list-item-content>
-            <v-list-item-title class="participant-name">{{ participant.name }} ({{ participant.gender }})</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
-  
-      <v-divider class="my-4" />
-  
-      <h2 class="subtitle">経過時間</h2>
-      <div class="elapsed-time">{{ formattedTime }}</div>
-  
+      <!-- ユーザーとその結果画像の表示 -->
+      <div class="result-container">
+        <div v-for="(user, index) in users" :key="user.name" class="user-result">
+          <!-- ユーザー名とその横に結果画像 -->
+          <div class="user-info">
+            <!-- ユーザー名の文字を小さく -->
+            <h3 class="user-name">{{ user.name }}</h3>
+            <div class="user-images">
+              <v-img
+                v-for="(image, imgIndex) in user.images"
+                :key="imgIndex"
+                :src="image"
+                alt="Result Image"
+                class="result-image"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 終了ボタン -->
       <div class="button-container">
         <v-btn @click="goBack" class="back-button">
           終了
@@ -31,38 +36,86 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+// 必要なライブラリをインポート
+import { ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
+// ルーターからパラメータを取得
 const route = useRoute();
 const router = useRouter();
 
-const participants = ref(JSON.parse(route.params.participants || '[]'));
-const elapsedTime = ref(Number(route.params.elapsedTime) || 0);
-const partyName = ref(route.params.partyName || '');
+// パーティ名の取得（デフォルト値も設定）
+const partyName = ref(route.params.partyName || '未定');
 
-const formattedTime = computed(() => {
-  const minutes = Math.floor(elapsedTime.value / 60);
-  const seconds = elapsedTime.value % 60;
-  return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-});
+// ユーザーとその結果画像データ
+const users = ref([
+  { name: 'ユーザー１', images: ['result.png', 'result.png', 'result.png'] },
+  { name: 'ユーザー２', images: ['result.png', 'result.png', 'result.png', 'result.png'] },
+  { name: 'ユーザー３', images: ['result.png'] },
+  { name: 'ユーザー４', images: ['result.png', 'result.png'] },
+  { name: 'ユーザー５', images: ['result.png', 'result.png'] },
+  { name: 'ユーザー６', images: ['result.png', 'result.png', 'result.png'] }
+]);
 
-// 終了ボタンを押したときのメソッド
+// 終了ボタンの動作（タイトルページに戻る）
 const goBack = () => {
-  router.push({ name: 'title' }); // title.vueに戻る
+  router.push({ name: 'title' });
 };
 </script>
 
 <style scoped>
+/* 背景のグラデーション設定 */
 .container {
-  background: linear-gradient(to bottom, #fdd835, #ffe57f);
-  height: 100vh;
+  background: linear-gradient(to bottom, #fdd835, #ffe57f); /* 明るい黄色のビールをイメージした背景 */
+  height: 100vh;  /* 画面全体の高さ */
 }
 
-.title, .subtitle, .elapsed-time {
-  color: #5d3d2c; /* 茶色に変更 */
+/* タイトルのスタイル */
+.title {
+  color: #5d3d2c; /* 茶色 */
+  font-size: 2rem;
+  margin-bottom: 20px;
 }
 
+/* 結果コンテナのスタイル */
+.result-container {
+  margin-bottom: 30px;
+}
+
+/* 各ユーザーの情報を縦に並べる */
+.user-result {
+  margin-bottom: 20px;
+}
+
+.user-info {
+  display: flex;  /* ユーザー名と画像を横に並べる */
+  justify-content: flex-start;  /* 左寄せにする */
+  align-items: center;
+  gap: 10px;  /* ユーザー名と画像の間隔 */
+}
+
+/* ユーザー名のスタイル */
+.user-name {
+  color: #5d3d2c;
+  font-size: 1rem; /* すべてのユーザー名の文字サイズを小さく */
+  font-weight: normal; /* 太字ではなく通常の太さ */
+  margin: 0;
+}
+
+/* ユーザー画像のスタイル */
+.user-images {
+  display: flex;
+  gap: 10px; /* 画像間隔を設定 */
+}
+
+.result-image {
+  width: 60px;  /* 画像のサイズを小さく */
+  height: 60px;
+  object-fit: cover; /* 画像のアスペクト比を保ちながらサイズ調整 */
+  border-radius: 8px;
+}
+
+/* 終了ボタンのコンテナのスタイル */
 .button-container {
   display: flex;
   justify-content: center;
@@ -70,6 +123,7 @@ const goBack = () => {
   height: 100px;
 }
 
+/* 終了ボタンのスタイル */
 .back-button {
   font-size: 1.5rem;
   padding: 10px 20px;
@@ -81,9 +135,9 @@ const goBack = () => {
   transition: background-color 0.3s, transform 0.3s;
 }
 
+/* 終了ボタンのホバー効果 */
 .back-button:hover {
-  background-color: #cc0000; /* ホバー時の色 */
+  background-color: #cc0000;
   transform: scale(1.05);
 }
 </style>
-

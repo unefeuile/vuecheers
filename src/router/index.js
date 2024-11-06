@@ -21,34 +21,31 @@ const manualRoutes = [
     component: Face,
     props: true,
   },
-
   {
     path: '/registration',
     name: 'registration',
     component: Registration,
     props: true,
-  },  
+  },
   {
     path: '/result',
     name: 'result',
     component: Result,
     props: true,
   },
-    {
-      path: '/',
-      name: 'Helloworld',
-      component: Helloworld,
-      props: true,
-    },
-    {
-      path: '/call',
-      name: 'call',
-      component: Call,
-      props: true,
-    },
-
+  {
+    path: '/',
+    name: 'Helloworld',
+    component: Helloworld,
+    props: true,
+  },
+  {
+    path: '/call',
+    name: 'call',
+    component: Call,
+    props: true,
+  },
 ];
-
 
 // 自動生成されたルートと手動で追加したルートを結合
 const routes = [...autoRoutes, ...manualRoutes];
