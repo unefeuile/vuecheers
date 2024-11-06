@@ -59,14 +59,14 @@ class AITalkWebAPI:
 		# 合成パラメータ（詳細はWebAPI仕様書を参照）
 		self.username = self.ID
 		self.password = self.PW
-		self.speaker_name 	= ''	# 話者名
+		self.speaker_name 	= 'kenta'	# 話者名
 		self.style 			= '{"j":"1.0"}'	# 感情パラメータ
 		self.input_type 	= 'text'		# 合成文字種別
 		self.text 			= ''			# 合成文字
 		self.volume 		= 1.0			# 音量（0.01-2.00）
 		self.speed 			= 1.0			# 話速（0.50-4.00）
-		self.pitch 			= 0.8			# ピッチ（0.50-2.00）
-		self.range 			= 2.0			# 抑揚（0.00-2.00）
+		self.pitch 			= 1.0			# ピッチ（0.50-2.00）
+		self.range 			= 1.5			# 抑揚（0.00-2.00）
 		self.output_type 	= 'sound'		# 出力形式
 		self.ext 			= 'mp3'			# 出力音声形式
 

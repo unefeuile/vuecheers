@@ -27,7 +27,7 @@ import { useRouter } from 'vue-router';  // useRouter をインポート
 import { ref, onMounted } from 'vue';
 
 // audioSrc と audioElement の設定
-const audioSrc = ref('');
+const audioSrc = ref('');  // 音声ファイルの URL を動的に設定
 const audioElement = ref(null);
 
 // useRouter を setup() 内で呼び出す
@@ -40,7 +40,20 @@ const navigateBack = () => {
 
 // 音声ファイルの URL 設定
 onMounted(() => {
-  audioSrc.value = 'http://127.0.0.1:5000/audio/output.mp3';  // 音声ファイルの URL
+  // 音声ファイルの配列
+  const audioFiles = [
+    'output.mp3',
+    'output1.mp3',
+    'output2.mp3'
+  ];
+
+  // ランダムに音声ファイルを選択
+  const randomAudio = audioFiles[Math.floor(Math.random() * audioFiles.length)];
+
+  // 音声ファイルのURLを設定
+  audioSrc.value = `http://127.0.0.1:5000/audio/${randomAudio}`;  // サーバーパスに応じて変更
+
+  // オーディオを再生
   if (audioElement.value) {
     audioElement.value.play();  // 自動で音声を再生
   }
@@ -162,4 +175,3 @@ const onAudioLoaded = () => {
   }
 }
 </style>
-
