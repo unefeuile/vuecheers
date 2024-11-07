@@ -1,50 +1,32 @@
 <template>
+  <!-- メインコンテナ -->
   <v-container class="d-flex align-center justify-center fill-height container">
     <div class="text-center">
+      <!-- 飲み会のタイトル -->
       <h1 class="title">{{ partyName }} 飲み会</h1>
-      <v-list>
-        <v-list-item v-for="(participant, index) in participants" :key="index" class="participant-item">
-          <v-list-item-avatar>
-            <v-img :src="participant.avatar || 'https://via.placeholder.com/50'" alt="アイコン" />
-          </v-list-item-avatar>
-          <v-list-item-content>
-            <v-list-item-title class="participant-name">{{ participant.name }} ({{ participant.gender }})</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
 
+      <!-- セクションを区切るための区切り線 -->
       <v-divider class="my-4" />
 
+      <!-- 経過時間の表示 -->
       <div class="elapsed-time">
         経過時間: {{ formattedTime }}
       </div>
 
+      <!-- セクションを区切るための区切り線 -->
       <v-divider class="my-4" />
 
-      <v-btn
-        variant="outlined"
-        @click="navigateToRegistration('user1')"
-        class="user-button user-name"
-      >
-        ユーザー１
-      </v-btn>
+      <!-- ユーザー1〜6の写真付きボタン -->
+      <v-row class="user-buttons" justify="center">
+        <v-col v-for="(user, index) in participants" :key="index" cols="6" md="3" class="d-flex justify-center">
+          <v-card class="user-card" @click="navigateToRegistration('user' + (index + 1))">
+            <v-img :src="getImagePath(index)" class="user-image" alt="User 1" />
+            <v-card-title class="user-name">{{ user.name }}</v-card-title>
+          </v-card>
+        </v-col>
+      </v-row>
 
-      <v-btn
-        variant="outlined"
-        @click="navigateToRegistration('user2')"
-        class="user-button user-name"
-      >
-        ユーザー２
-      </v-btn>
-
-      <v-btn
-        variant="outlined"
-        @click="navigateToRegistration('user3')"
-        class="user-button user-name"
-      >
-        ユーザー３
-      </v-btn>
-
+      <!-- コールボタン -->
       <v-container class="d-flex align-center justify-center fill-height">
         <v-btn
           variant="outlined"
@@ -56,6 +38,7 @@
         </v-btn>
       </v-container>
 
+      <!-- 飲み会終了ボタン -->
       <div class="button-container">
         <v-btn @click="endParty" class="end-button">
           飲み会終了
@@ -66,33 +49,56 @@
 </template>
 
 <script setup>
+// Vue Composition APIから必要な機能をインポート
 import { ref, computed, onMounted, onUnmounted } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 
-const route = useRoute();
+// ルーターと現在のルートを取得
 const router = useRouter();
+const route = useRoute();
 
-const participants = ref(JSON.parse(route.params.participants || '[]'));
+// 参加者情報、経過時間、飲み会名を設定
+const participants = ref([
+  { name: 'ユーザー１', alcoholLevel: 4 },
+  { name: 'ユーザー２', alcoholLevel: 8 },
+  { name: 'ユーザー３', alcoholLevel: 12 },
+  { name: 'ユーザー４', alcoholLevel: 20 },
+  { name: 'ユーザー５', alcoholLevel: 40 },
+  { name: 'ユーザー６', alcoholLevel: 4 },
+]);
+
+const partyName = ref(route.params.partyName || '飲み会');
 const elapsedTime = ref(Number(route.params.elapsedTime) || 0);
-const partyName = ref(route.params.partyName || '');
+
+// タイマー用の変数
 let timer;
 
+// 経過時間のフォーマット（分:秒）
 const formattedTime = computed(() => {
   const minutes = Math.floor(elapsedTime.value / 60);
   const seconds = elapsedTime.value % 60;
   return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 });
 
+// タイマーをスタートする関数
 const startTimer = () => {
   timer = setInterval(() => {
     elapsedTime.value++;
+
+    // 10秒経過したらコールページに遷移
+    if (elapsedTime.value >= 10) {
+      clearInterval(timer); // タイマー停止
+      navigateToCall(); // コールページへ遷移
+    }
   }, 1000);
 };
 
+// 飲み会終了処理
 const endParty = () => {
   console.log('飲み会が終了しました！');
-  clearInterval(timer);
+  clearInterval(timer); // タイマーを停止
 
+  // 終了後、結果ページに遷移
   router.push({
     name: 'result',
     params: {
@@ -103,83 +109,112 @@ const endParty = () => {
   });
 };
 
+// ユーザー登録ページに遷移する関数
 const navigateToRegistration = (userId) => {
   router.push({ name: 'registration', params: { userId } });
 };
 
+// コールページに遷移する関数
 const navigateToCall = () => {
-  router.push({ name: 'call' });
+  router.push({ name: 'call' }); // call.vueへの遷移
 };
 
+// 血中アルコール濃度に基づいて画像を選ぶ関数
+const getImagePath = (index) => {
+  const alcoholLevel = participants.value[index].alcoholLevel;
+  let imagePath = '';
+
+  if (alcoholLevel >= 41) {
+    imagePath = '/stage6.png';
+  } else if (alcoholLevel >= 31) {
+    imagePath = '/stage5.png';
+  } else if (alcoholLevel >= 16) {
+    imagePath = '/stage4.png';
+  } else if (alcoholLevel >= 11) {
+    imagePath = '/stage3.png';
+  } else if (alcoholLevel >= 6) {
+    imagePath = '/stage2.png';
+  } else {
+    imagePath = "/stage1.png";
+  }
+
+  return imagePath;
+};
+
+// コンポーネントがマウントされたときにタイマーを開始
 onMounted(() => {
   startTimer();
 });
 
+// コンポーネントがアンマウントされる前にタイマーを停止
 onUnmounted(() => {
   clearInterval(timer);
 });
 </script>
 
 <style scoped>
+/* コンテナ全体のスタイル */
 .container {
-  background: linear-gradient(to bottom, #fdd835, #ffe57f); /* ビールの色をイメージしたグラデーション */
-  height: 100vh; /* 全画面の高さを指定 */
+  background: linear-gradient(to bottom, #fdd835, #ffe57f); /* ビールの色 */
+  height: 100vh; /* 画面の高さに合わせる */
 }
 
+/* 飲み会のタイトル */
 .title {
   font-size: 2rem;
   margin-bottom: 16px;
-  color: #5d3d2c; /* 茶色に変更 */
+  color: #5d3d2c; /* 茶色 */
 }
 
+/* 経過時間の表示 */
 .elapsed-time {
   font-size: 1.5rem;
   margin: 20px 0;
-  color: #5d3d2c; /* 茶色に変更 */
+  color: #5d3d2c;
 }
 
-.participant-name {
-  color: #5d3d2c; /* 茶色に変更 */
-}
-
-.user-name {
-  color: #5d3d2c; /* ボタンの文字を茶色に変更 */
-}
-
-.button-container {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-}
-
-.end-button {
-  font-size: 1.5rem;
-  padding: 15px 30px;
+/* ユーザーカード */
+.user-card {
+  width: 130px;
+  margin: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
   border-radius: 10px;
-  background-color: #ff0000;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.3s, transform 0.3s;
 }
 
-.end-button:hover {
-  background-color: #cc0000;
-  transform: scale(1.05);
+/* ユーザー画像 */
+.user-image {
+  height: 120px;
+  object-fit: cover;
+  border-radius: 10px 10px 0 0;
 }
 
-.participant-item {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* ユーザー名 */
+.user-name {
+  font-size: 1rem;
+  padding: 8px;
+  color: #5d3d2c;
+  font-weight: bold;
 }
 
+/* コールボタン */
 .call-button {
-  font-size: 1.5rem;
-  padding: 10px 20px;
-  border-radius: 5px;
-  background-color: #4caf50; /* 緑色のボタン */
+  font-size: 30px;
+  color: #ff5722;
+  background-color: #ff9800;
+}
+
+/* 飲み会終了ボタン */
+.end-button {
+  background-color: #5d3d2c;
   color: white;
+  font-size: 1.2rem;
+  padding: 10px 20px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 200px;
+  margin: 20px auto;
+  border-radius: 25px;
 }
 </style>
