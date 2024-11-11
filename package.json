@@ -2,14 +2,17 @@
   "name": "vuecheers",
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint . --fix --ignore-path .gitignore"
   },
   "dependencies": {
+    "@firebasegen/default-connector": "file:dataconnect-generated/js/default-connector",
     "@mdi/font": "7.4.47",
+    "axios": "^1.7.7",
     "core-js": "^3.37.1",
+    "firebase": "^11.0.1",
     "roboto-fontface": "*",
     "vue": "^3.4.31",
     "vuetify": "^3.6.11"

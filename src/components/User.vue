@@ -40,6 +40,8 @@
 <script setup>
 import { ref, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { db } from '@/firebase';
+import { collection, addDoc, setDoc, doc } from 'firebase/firestore';
 
 const router = useRouter();
 
@@ -51,9 +53,42 @@ const genders = ['男性', '女性'];
 const elapsedTime = ref(0);
 let timer;
 
-const addParticipant = () => {
+const startParty = async () => {
+  if (partyName.value) {
+    try {
+      await setDoc(doc(db, 'drinking_place', 'place'), {
+        location: partyName.value,
+        created_at: new Date(),
+      });
+      console.log(`飲み会名 '${partyName.value}' が 'drinking_place' コレクションに保存されました。`);
+    } catch (error) {
+      console.error('飲み会名の保存に失敗しました:', error);
+    }
+  }
+};
+
+const addParticipant = async () => {
   if (participantName.value && selectedGender.value) {
-    participants.value.push({ name: participantName.value, gender: selectedGender.value, avatar: '' });
+    participants.value.push({ name: participantName.value, gender: selectedGender.value });
+
+    // 性別を数値に変換
+    let genderValue = 0; // デフォルトは男性
+    if (selectedGender.value === '女性') {
+      genderValue = 1; // 女性の場合は1に設定
+    }
+
+    try {
+      // drinking_records コレクションに参加者の情報を保存
+      await setDoc(doc(db, 'drinking_records', participantName.value), {
+        gender: genderValue, // 数値に変換した性別を保存
+        blood_alcohol_level: 0,
+        alcohol_name_list: [],
+      });
+      console.log(`参加者 '${participantName.value}' の情報が保存されました。`);
+    } catch (error) {
+      console.error('参加者の保存に失敗しました:', error);
+    }
+
     participantName.value = '';
     selectedGender.value = '';
   }

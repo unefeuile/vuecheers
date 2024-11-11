@@ -13,12 +13,27 @@
 <script>
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { useRouter } from 'vue-router';
+import { db } from '@/firebase';
+import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
 
 export default {
   setup() {
     const router = useRouter();
     const bubbles = ref([]);
     const isGameStarted = ref(false); // ゲーム開始状態
+
+    // Firestore コレクション内の全データを削除する関数
+    const deleteAllDocuments = async (collectionName) => {
+      try {
+        const querySnapshot = await getDocs(collection(db, collectionName));
+        for (const docSnap of querySnapshot.docs) {
+          await deleteDoc(doc(db, collectionName, docSnap.id));
+        }
+        console.log(`コレクション '${collectionName}' の全ドキュメントが削除されました。`);
+      } catch (error) {
+        console.error('ドキュメント削除に失敗しました:', error);
+      }
+    };
 
     // 画面が開いたときに音を再生
     onMounted(() => {
@@ -29,12 +44,21 @@ export default {
       setInterval(createBubble, 300); // 0.3秒ごとに泡を生成
     });
 
-    const startGame = () => {
+    const startGame = async () => {
       if (!isGameStarted.value) {
         // スタートボタンが押されたときに音を再生
         const audio = new Audio('/meka_ge_mouse_s02.mp3'); // 音のファイルパス
         audio.volume = 0.5; // 音量設定
         audio.play();
+
+        try {
+          // Firestore のデータ削除
+          await deleteAllDocuments('drinking_records');
+          await deleteAllDocuments('drinking_place');
+        }catch (error) {
+          console.error('ドキュメント削除に失敗しました:', error);
+        };
+        
 
         isGameStarted.value = true; // ゲーム開始状態を更新
         router.push('/user'); // ユーザー画面に遷移
