@@ -41,7 +41,7 @@
 import { ref, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { db } from '@/firebase';
-import { collection, addDoc, setDoc, doc } from 'firebase/firestore';
+import { setDoc, doc } from 'firebase/firestore';
 
 const router = useRouter();
 

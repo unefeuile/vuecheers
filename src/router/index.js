@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router/auto';
-import { routes as autoRoutes } from 'vue-router/auto-routes';
+// import { routes as autoRoutes } from 'vue-router/auto-routes';
 import User from '@/components/User.vue';
 import Face from '@/components/face.vue';
 import Registration from '@/components/registration.vue';
@@ -47,7 +47,7 @@ const manualRoutes = [
 ];
 
 // 自動生成されたルートと手動で追加したルートを結合
-const routes = [...autoRoutes, ...manualRoutes];
+const routes = [...manualRoutes];
 const router = createRouter({
   history: createWebHistory(),
   routes,

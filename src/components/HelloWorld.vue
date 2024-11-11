@@ -2,7 +2,7 @@
   <div class="container">
     <h1 class="title">Cheers</h1>
     <img src="/beer.png" alt="中央の写真" class="image" />
-    <button @click="startGame" :disabled="isGameStarted" class="start-button">スタート</button>
+    <v-btn @click="startGame" :disabled="isGameStarted" class="start-button">スタート</v-btn>
 
     <div class="bubble-container">
       <div v-for="bubble in bubbles" :key="bubble.id" class="bubble" :style="bubble.style"></div>

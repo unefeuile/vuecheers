@@ -53,7 +53,7 @@
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { db } from '@/firebase';
-import { collection, getDocs, query, where,doc, getDoc } from 'firebase/firestore';
+import { collection, getDocs, query, where, doc, getDoc } from 'firebase/firestore';
 
 // ルーターを使用して、現在のページのパラメーターを取得
 const route = useRoute();
